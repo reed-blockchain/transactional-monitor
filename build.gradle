@@ -1,0 +1,86 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '1.3.21'
+}
+
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    // In house library
+    implementation group: 'info.blockchain', name: 'util', version: '0.16.8'
+    api(group: 'com.blockchain', name: 'nabu-payments-client', version: nabuPaymentsClientVersion) {
+        exclude group: "ch.qos.logback"
+        exclude group: "log4j"
+    }
+    api(group: 'com.blockchain', name: 'nabu-util', version: nabuVersion) {
+        exclude group: "ch.qos.logback"
+        exclude group: "log4j"
+    }
+    //api "com.blockchain:nabu-guice:$nabuLibVersion"
+    api(group: 'com.blockchain', name: 'nabu-common', version: nabuCommonVersion) {
+        exclude group: "com.github.kittinunf.fuel"
+        exclude group: "ch.qos.logback"
+        exclude group: "log4j"
+    }
+
+    // eth
+    compile "org.web3j:core:$web3jVersion"
+    compile "org.web3j:parity:$web3jVersion"
+    compile "org.web3j:geth:$web3jVersion"
+
+    // blockchain
+    compile "info.blockchain:stats:$bciCommonsVersion"
+    compile "info.blockchain:util:$bciCommonsVersion"
+    compile "info.blockchain:pubsub:$bciCommonsVersion"
+    compile(group: 'info.blockchain.eth', name: 'datamodel', version: '0.3.9')
+    compile(group: 'info.blockchain.eth', name: 'api-client', version: '0.2.8')
+    compile(group: 'info.blockchain.eth', name: 'common', version: '0.1.3+')
+    compile(group: 'info.blockchain', name: 'datamodel.proto', version: '0+')
+
+    compile 'com.rabbitmq:amqp-client:5.3.0'
+
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+
+allprojects {
+    group = 'com.blockchain'
+
+    apply plugin: 'jacoco'
+
+    jacoco {
+        toolVersion '0.8.2'
+    }
+
+    repositories {
+        mavenLocal()
+        maven {
+            url nexusUrl + '/repository/maven-public/'
+            credentials(PasswordCredentials) {
+                username nexusUsername
+                password nexusPassword
+            }
+            println(nexusUsername)
+            println(nexusPassword)
+        }
+        mavenCentral()
+        jcenter()
+    }
+}
